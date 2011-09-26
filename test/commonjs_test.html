@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv='Content-type' content='text/html; charset=utf-8'>
+  <title>sideburn commonjs tests</title>
+  <link rel='stylesheet' href='../vendor/qunit/qunit.css' type='text/css' charset='utf-8'>
+  <script src='../vendor/qunit/qunit.js' type='text/javascript' charset='utf-8'></script>
+  <script type='text/javascript'>
+    var module = { exports : {} };
+  </script>
+  <script type='text/javascript' src='../src/sideburn.js'></script>
+</head>
+<body>
+<h1 id='qunit-header'>sideburn commonjs tests</h1>
+
+<h2 id='qunit-banner'></h2>
+<h2 id='qunit-userAgent'></h2>
+<ol id='qunit-tests'></ol>
+
+<script type='text/javascript' charset='utf-8'>
+QUnit.module('exportation');
+
+QUnit.test('sideburn should export to commonjs structure when present', function() {
+  ok(module.exports.textToDocument);
+});
+
+QUnit.test('sideburn should not export to global when commonjs structure is present', function() {
+  equal(window.sideburn, undefined);
+});
+
+</script>
+</body>
+</html>

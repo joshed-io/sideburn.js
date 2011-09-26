@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv='Content-type' content='text/html; charset=utf-8'>
+  <title>sideburn tests</title>
+  <style>#test-container {display: none}</style>
+  <link rel='stylesheet' href='../vendor/qunit/qunit.css' type='text/css' charset='utf-8'>
+  <script src='../vendor/qunit/qunit.js' type='text/javascript' charset='utf-8'></script>
+  <script type='text/javascript' src='../src/sideburn.js'></script>
+</head>
+<body>
+<h1 id='qunit-header'>sideburn tests</h1>
+
+<h2 id='qunit-banner'></h2>
+<h2 id='qunit-userAgent'></h2>
+<ol id='qunit-tests'></ol>
+
+<!-- part of the test -->
+<div id="test-container">
+  <nav id="semid" class="semclass" semattr="semattrvalue"></nav>
+  <p>sempone</p>
+  <p>semptwo</p>
+  textnode
+</div>
+
+<script type='text/javascript' charset='utf-8'>
+var wait = 500,
+  semanticHtml = document.getElementById("test-container"),
+  output = sideburn(semanticHtml),
+  objString = Object.prototype.toString;
+
+function sType(obj) {
+  return objString.call(obj);
+}
+
+QUnit.module('exportation');
+
+QUnit.test('sideburn should export to global', function() {
+  ok(window.sideburn);
+});
+
+QUnit.module('reading data');
+
+QUnit.test('an attribute value should be reachable via an attribute name', function() {
+  equal(output.id, "test-container");
+});
+
+QUnit.test('attribute names should be present on the top level object', function() {
+  equal(sideburn("<div id='A'></div>").id, "A");
+});
+
+QUnit.module('reading text nodes');
+
+QUnit.test('an element\'s text value should be readable via text property', function() {
+  ok(/textnode/.test(output.text));
+});
+
+QUnit.test('multiple text nodes are available independently and as text', function() {
+  equal(sideburn("<div>A<a></a>B<a></a>C</div>")._text[0], "A");
+  equal(sideburn("<div>A<a></a>B<a></a>C</div>")._text_0, "A");
+  equal(sideburn("<div>A<a></a>B<a></a>C</div>").text, "ABC");
+});
+
+QUnit.test('trimmed values are available via the trimmed property (individual and concatted)', function() {
+  equal(sideburn("<div> A </div>").text, " A ");
+  equal(sideburn("<div> A </div>").text_trimmed, "A");
+  equal(sideburn("<div> A </div>")._text_0, " A ");
+  equal(sideburn("<div> A </div>")._text_trimmed_0, "A");
+});
+
+QUnit.module('traversal of elements');
+
+QUnit.test('a child node should be reachable by ID', function() {
+  equal(output.semid._node_name, "nav");
+});
+
+QUnit.test('a child node should be reachable by class', function() {
+  equal(output.semclass._node_name, "nav");
+});
+
+QUnit.test('a child node should be reachable by element name', function() {
+  equal(output.nav._node_name, "nav");
+});
+
+QUnit.test('a child node should be reachable by an attribute name', function() {
+  equal(output.semattr._node_name, "nav");
+});
+
+QUnit.module('array properties');
+
+QUnit.test('prefixing the property with _ will return an array', function() {
+  ok(sType(output._p) === "[object Array]");
+  equal(output._p.length, 2);
+});
+
+QUnit.test('prefixing the property with _ and suffixing with _index will return the element at index', function() {
+  equal(output._p_0.text, "sempone");
+  equal(output._p_1.text, "semptwo");
+});
+
+QUnit.module('precedence of extended properties');
+
+QUnit.test('when a property applies to elements of equal precedence the first is used', function() {
+  equal(sideburn("<div><a>A</a><a>B</a></div>").a.text, "A");
+});
+QUnit.test('attribute name should take precedence over id', function() {
+  equal(sideburn("<div foo='B'><a id='foo'>A</a></div>").foo, "B");
+});
+QUnit.test('id should take precedence over class', function() {
+  equal(sideburn("<div><a class='foo'>B</a><a id='foo'>A</a></div>").foo.text, "A");
+});
+QUnit.test('class should take precedence over element name', function() {
+  equal(sideburn("<div><foo>B</foo><a class='foo'>A</a></div>").foo.text, "A");
+});
+QUnit.test('element name should take precedence over child attribute name', function() {
+  equal(sideburn("<div><a foo='bar'>B</a><foo>A</foo></div>").foo.text, "A");
+});
+
+QUnit.module('text values have highest precedence and should not be overridden');
+
+QUnit.test('text nodes should take precedence over attribute name', function() {
+  equal(sideburn("<div>B<a text='A'>A</a></div>").text, "B");
+});
+
+QUnit.test('text nodes should take precedence over class', function() {
+  equal(sideburn("<div>B<a class='text'>A</a></div>").text, "B");
+});
+
+QUnit.test('text nodes should take precedence over id', function() {
+  equal(sideburn("<div>B<a id='text'>A</a></div>").text, "B");
+});
+
+QUnit.test('text nodes should take precedence over element name', function() {
+  equal(sideburn("<div>B<text>A</text></div>").text, "B");
+});
+
+QUnit.module('property access via internal selector-based groups');
+
+QUnit.test('should allow specific access via id using _by_id', function() {
+  equal(sideburn("<div><a id='b'>A</a></div>")._by_id.b, "A");
+});
+
+QUnit.test('should allow specific access via class using _by_class', function() {
+  equal(sideburn("<div><a class='b'>A</a></div>")._by_class.b, "A");
+});
+
+QUnit.test('should allow specific access via attribute name using _by_attribute', function() {
+  equal(sideburn("<div><a foo='bar'>A</a></div>")._by_attribute.foo, "A");
+});
+
+QUnit.test('should allow specific access via element using _by_element', function() {
+  equal(sideburn("<div><a>A</a></div></div>")._by_element.a, "A");
+});
+
+QUnit.module('text to dom conversion');
+
+QUnit.test('textToDocument should return a document', function() {
+  equal(sType(sideburn.textToDocument("<div></div>")), "[object Document]");
+});
+
+QUnit.module('exposed internals');
+
+QUnit.test('_node should return the original HTML element', function() {
+  equal(sideburn("<div>A</div>")._node.childNodes[0].nodeValue, "A");
+});
+
+QUnit.test('should return the correct amount of unique children', function() {
+  equal(output._children.length, 3);
+});
+
+QUnit.test('it should return the text node value', function() {
+  equal(sideburn("<a>A</a>").toString(), "A");
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv='Content-type' content='text/html; charset=utf-8'>
+  <title>sideburn amd tests</title>
+  <link rel='stylesheet' href='../vendor/qunit/qunit.css' type='text/css' charset='utf-8'>
+  <script src='../vendor/qunit/qunit.js' type='text/javascript' charset='utf-8'></script>
+  <script type='text/javascript' src='../lib/require.js'></script>
+</head>
+<body>
+<h1 id='qunit-header'>sideburn amd tests</h1>
+
+<h2 id='qunit-banner'></h2>
+<h2 id='qunit-userAgent'></h2>
+<ol id='qunit-tests'></ol>
+
+<script type='text/javascript' charset='utf-8'>
+QUnit.module('exportation');
+
+QUnit.test('sideburn should export to amd when present', function() {
+  stop(500);
+  expect(1);
+  require(["../src/sideburn"], function(sideburn) {
+    ok(sideburn.textToDocument);
+    start();
+  });
+});
+
+QUnit.test('sideburn should not export to global when amd is present', function() {
+  stop(500);
+  expect(1);
+  require(["../src/sideburn"], function(sideburn) {
+    equal(window.sideburn, undefined);
+    start();
+  });
+});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "sideburn",
+  "description": "Convert HTML to mustache-friendly JSON",
+  "version": "0.1.0",
+  "authors": ["Josh Dzielak <josh@scrapp.it>"],
+  "keywords": ["dom2json", "html", "mustache", "mustachejs", "template", "templating", "logic-less", "scrappit"],
+  "main": "./build/sideburn.min.js",
+  "homepage": "http://scrappit.org/sideburn",
+  "repository" : {
+    "type" : "git",
+    "url" : "git@github.com:dzello/sideburn.git"
+  },
+  "licenses" : [
+    { "type" : "MIT" }
+  ]
+}
