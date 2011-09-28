@@ -93,9 +93,12 @@ File Size
 ---------
 sideburn.js is 2.8K minified, and 1.3K when minified and gzipped.
 
-More Coming Soon!
------------------
-More documentation and examples are coming soon. For now check out /test folder.
+Tests
+---------
+Check out the `/tests` folder for more examples. You can see all of the properties that are become available on the JSON.
+
+You can also see how precedence is handled when child elements are found
+via different methods - e.g. class, id, element, and attribute names. And more!
 
 Be Scrappy!
 -----------
