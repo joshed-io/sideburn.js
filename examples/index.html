@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv='Content-type' content='text/html; charset=utf-8'>
+  <title>sideburn.js examples</title>
+  <style>pre { width: 500px; }</style>
+  <script type='text/javascript' src='../lib/mustache.js'></script>
+  <script type='text/javascript' src='../src/sideburn.js'></script>
+</head>
+<body>
+
+<h1>sideburn.js examples</h1>
+
+<h2>Original HTML</h2>
+
+<pre id="original-html">
+  <div id="address-section">
+    <div id="address-data" class="grid11 clearfix">
+      <div class="placename large grid4">Dogpatch Saloon</div>
+      <span class="thick"><number>2496</number> 3rd St.</span>
+      <div role='city' class="floatleft">San Francisco</div>,
+      <div class="state grid2 floatright">CA</div> 94107
+    </div>
+  </div>
+</pre>
+
+<h2>Mustache Template</h2>
+
+<pre id="mustache-template">
+  {{#address_data}}
+    <div class="adr">
+      <div class="name">{{placename}}</div>
+      {{#thick}}
+        <div class="street">{{number}}
+        {{text}}</div>
+      {{/thick}}
+      {{#role}}
+        <span class="locality">{{text}}</span>,
+      {{/role}}
+      {{#_div_2}}
+        <span class="region">{{text}}</span>
+      {{/_div_2}}
+      <span class="postal-code">{{text_trimmed}}</span>
+      <div class="country-name">U.S.A.</div>
+    </div>
+  {{/address_data}}
+</pre>
+
+<h2>The Result:</h2>
+
+<div id="result" rows="10"></div>
+
+<script type='text/javascript' charset='utf-8'>
+
+  var originalHtml = document.getElementById("original-html").innerHTML,
+      template = document.getElementById("mustache-template").innerHTML;
+
+  var jsonData = sideburn(originalHtml);
+
+  var newHtml = Mustache.to_html(template, jsonData);
+
+  document.getElementById("result").innerHTML = newHtml;
+
+</script>
+</body>
+</html>

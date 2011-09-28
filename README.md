@@ -10,112 +10,84 @@ Given this DOM:
 
 `sideburn(domElement)` produces a JSON object structure:
 
-``` js
-{
-  div : {
-    img : { src : 'foo.png' },
-    text : 'sideburn'
-  }
-}
-```
+
+    {
+      div : {
+        img : { src : 'foo.png' },
+        text : 'sideburn'
+      }
+    }
 
 These are just a few of the properties that are created.
 
 Usage
 --------------
-sideburn's DOM representation in JSON contains a variety of properties to
-help you you reach any node with logic-less, [mustache](http://mustache.github.com)-style templating.
+sideburn gives you a JSON DOM representation that's easily templatable
+with logic-less engines like mustache.
 
-See this somewhat laundry list example of all of the properties reflected in the JSON.
+Sample Use: You're writing a bookmarklet, extension, or [scrapp](http://scrappit.org) that seeks to
+replace the interface of an existing web site with something better.
 
-    <div id="test-container">
-      <nav id="semid" class="semclass" semattr="semattrvalue"></nav>
-      <p>sempone</p>
-      <p>semptwo</p>
-      textnode
+You'd like to use the existing HTML and template it with mustache to create new HTML.
+
+Here's the HTML you're starting with - in this case it's a tangled
+mess of presentational and semantic HTML:
+
+    <div id="address-section">
+      <div id="address-data" class="grid11 clearfix">
+        <div class="placename large grid4">Dogpatch Saloon</div>
+        <span class="thick"><number>2496</number> 3rd St.</span>
+        <div role='city' class="floatleft">San Francisco</div>,
+        <div class="state grid2 floatright">CA</div> 94107
+      </div>
     </div>
 
-``` js
-{
-  _attributes: Object
-  _by_attribute: Object
-  _by_class: Object
-  _by_element: Object
-  _by_id: Object
-  _children: Array[3]
-  _class: Array[1]
-  _class_0: Object
-  _id: Array[1]
-  _id_0: Object
-  _nav: Array[1]
-  _nav_0: Object
-  _node: HTMLDivElement
-  _node_name: "div"
-  _p:
-    [{
-      _attributes: Object
-      _by_attribute: Object
-      _by_class: Object
-      _by_element: Object
-      _by_id: Object
-      _children: Array[0]
-      _node: HTMLParagraphElement
-      _node_name: "p"
-      _text: Array[1]
-      _text_0: "sempone"
-      _text_trimmed_0: "sempone"
-      text: "sempone"
-      text_trimmed: "sempone"
-    },
-    { .. }]
-  }
-  _p_0: Object
-  _p_1: Object
-  _semattr: Array[1]
-  _semattr_0: Object
-  _semclass: Array[1]
-  _semclass_0: Object
-  _semid: Array[1]
-  _semid_0: Object
-  _text: Array[4]
-  _text_0: "↵  "
-  _text_1: "↵  "
-  _text_2: "↵  "
-  _text_3: "↵  textnode↵"
-  _text_trimmed_0: ""
-  _text_trimmed_1: ""
-  _text_trimmed_2: ""
-  _text_trimmed_3: "textnode"
-  id: "test-container"
-  nav: Object
-  p: Object
-  semattr: Object
-  semclass: Object
-  semid: Object
-  text: "↵  ↵  ↵  ↵  textnode↵"
-  text_trimmed: "textnode"
-}
-```
+Let's use sideburn and mustache to turn this into nice, semantic markup without the cruft
 
-Use this data as the view for a mustache template. For example, we can print only the text of the second paragraph within the `div` element.
+Here's the sideburn call:
 
-```
-{{#test-container}}
-  <div id="test-container">
-    {{#_p_1}}
-      {{text}}
-    {{/_p_1}}
-  </div>
-{{/test-container}}
-```
 
-Outputs:
+    var addressJSON = sideburn(document.getElementById("address-section"));
 
-```
-<div id="test-container">
-  semptwo
-</div>
-```
+
+(Note: sideburn expects a DOM element or a string of XML. The string of XML is converted using sideburn.textToDocument(str)
+before the JSON transformation.)
+
+Here's the mustache template. It uses the JSON to create microformat-compatible address markup:
+
+    {{#address_data}}
+      <div class="adr">
+        <div class="name">{{placename}}</div>
+        {{#thick}}
+          <div class="street">{{number}}
+          {{text}}</div>
+        {{/thick}}
+        {{#role}}
+          <span class="locality">{{text}}</span>,
+        {{/role}}
+        {{#_div_2}}
+          <span class="region">{{text}}</span>
+        {{/_div_2}}
+        <span class="postal-code">{{text_trimmed}}</span>
+        <div class="country-name">U.S.A.</div>
+      </div>
+    {{/address_data}}
+
+Put it all together:
+
+    Mustache.to_html(template, addressJSON)
+
+And see the final result:
+
+    <div class="adr">
+      <div class="name">Dogpatch Saloon</div>
+      <div class="street">2496 3rd. St</div>
+      <span class="locality">San Francisco</span>,
+      <span class="region">CA</span>
+      <span class="postal-code">94107</span>
+      <div class="country-name">U.S.A.</div>
+    </div>
+
 
 File Size
 ---------
