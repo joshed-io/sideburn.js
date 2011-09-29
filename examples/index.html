@@ -34,13 +34,9 @@
         <div class="street">{{number}}
         {{text}}</div>
       {{/thick}}
-      {{#role}}
-        <span class="locality">{{text}}</span>,
-      {{/role}}
-      {{#_div_2}}
-        <span class="region">{{text}}</span>
-      {{/_div_2}}
-      <span class="postal-code">{{text_trimmed}}</span>
+      {{#role}}<span class="locality">{{text}}</span>, {{/role}}
+      {{#_div_2}}<span class="region">{{text}}</span> {{/_div_2}}
+      <span class="postal-code">{{_text_trimmed_4}}</span>
       <div class="country-name">U.S.A.</div>
     </div>
   {{/address_data}}

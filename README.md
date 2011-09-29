@@ -3,35 +3,48 @@ sideburn.js (1.3K)
 
 > Convert HTML to mustache-friendly JSON.
 
-Given this DOM:
+Usage
+--------------
+Given some DOM:
 
-    <div><img src="foo.png"/>sideburn</div>
+    <body>
+      <div id='burner'>
+        <img src="foo.png"/>
+        sideburn
+      </div>
+    </body>
 
 
-`sideburn(domElement)` produces a JSON object structure:
+`sideburn(document.body)` produces a JSON object structure like this:
 
 
     {
       div : {
+        id : 'burner',
         img : { src : 'foo.png' },
         text : 'sideburn'
       }
     }
 
-These are just a few of the properties that are created.
+This JSON is structured so that it's easy to input into a logic-less templating engine like [mustache](http://mustache.github.com).
+This process allows you to create new HTML from old HTML using a fast and familiar transformation.
 
-Usage
+sideburn accepts DOM elements, XML document elements, and strings containing HTML/XML. Strings are converted to documents
+first via `sideburn.textToDocument`, which is exposed for you to call separately if you like.
+
+
+When would I use this?
 --------------
-sideburn gives you a JSON DOM representation that's easily templatable
-with logic-less engines like mustache.
+Any time you need to convert HTML to HTML, XML to HTML, or either just to create JSON that's easy to traverse via property access.
 
-Sample Use: You're writing a bookmarklet, extension, or [scrapp](http://scrappit.org) that seeks to
-replace the interface of an existing web site with something better.
+[Scrapps](http://scrappit.org), bookmarklets and userscripts regularly convert
+a web site's original HTML into new HTML meant to order to provide an enhanced user interface. If you're writing one and doing it the old fashioned way, give this a try.
 
-You'd like to use the existing HTML and template it with mustache to create new HTML.
+Example
+-------
+Use Case: You'd like to use some existing HTML and template it with mustache to create new HTML.
 
-Here's the HTML you're starting with - in this case it's a tangled
-mess of presentational and semantic HTML:
+Here's the HTML you're starting with - in this case it's a **tangled mess of presentational and semantic HTML**:
 
     <div id="address-section">
       <div id="address-data" class="grid11 clearfix">
@@ -42,7 +55,7 @@ mess of presentational and semantic HTML:
       </div>
     </div>
 
-Let's use sideburn and mustache to turn this into nice, semantic markup without the cruft
+Let's use sideburn and mustache to turn this into nice, semantic markup without the cruft.
 
 Here's the sideburn call:
 
@@ -50,10 +63,7 @@ Here's the sideburn call:
     var addressJSON = sideburn(document.getElementById("address-section"));
 
 
-(Note: sideburn expects a DOM element or a string of XML. The string of XML is converted using sideburn.textToDocument(str)
-before the JSON transformation.)
-
-Here's the mustache template. It uses the JSON to create microformat-compatible address markup:
+And here's the mustache template. It uses the JSON to create microformat-compatible address markup:
 
     {{#address_data}}
       <div class="adr">
@@ -62,18 +72,14 @@ Here's the mustache template. It uses the JSON to create microformat-compatible 
           <div class="street">{{number}}
           {{text}}</div>
         {{/thick}}
-        {{#role}}
-          <span class="locality">{{text}}</span>,
-        {{/role}}
-        {{#_div_2}}
-          <span class="region">{{text}}</span>
-        {{/_div_2}}
-        <span class="postal-code">{{text_trimmed}}</span>
+        {{#role}}<span class="locality">{{text}}</span>, {{/role}}
+        {{#_div_2}}<span class="region">{{text}}</span> {{/_div_2}}
+        <span class="postal-code">{{_text_trimmed_4}}</span>
         <div class="country-name">U.S.A.</div>
       </div>
     {{/address_data}}
 
-Put it all together:
+Now, use mustache to render our template based on the sideburn JSON representation:
 
     Mustache.to_html(template, addressJSON)
 
@@ -88,24 +94,26 @@ And see the final result:
       <div class="country-name">U.S.A.</div>
     </div>
 
+**It's the markup we've always wanted, and we didn't have to write any custom code.**
 
-File Size
----------
-sideburn.js is 2.8K minified, and 1.3K when minified and gzipped.
+_See this example live at `examples/index.html`_
+
+File Size & Exports
+-------------------
+sideburn.js is 1.3K when minified and gzipped.
+
+sideburn supports AMD (require/define) and commonjs (module/exports), and in these cases it does not export to global.
 
 Tests
 ---------
-Check out the `/tests` folder for more examples. You can see all of the properties that are become available on the JSON.
+Check out the `/tests` folder for more examples - you can run them right in your browser. This will help you see all of the properties that are available on the JSON that sideburn creates.
 
-You can also see how precedence is handled when child elements are found
-via different methods - e.g. class, id, element, and attribute names. And more!
+You can also see how precedence is handled when child elements are found via different methods - e.g. class, id, element, and attribute names.
 
 Be Scrappy!
 -----------
 sideburn.js is part of the scrappit project at [http://scrappit.org](http://scrappit.org).
-sideburn helps you template directly against an underlying DOM without complex logic or
-scattered & expensive DOM hits. This makes it easier to create new interfaces
-from existing HTML.
+scrappit is all about breathing new life into old interfaces.
 
 License
 -------
