@@ -328,7 +328,7 @@
   //export to amd, commonjs, or context
   var exportToContext = true;
 
-  if ((typeof define !== strUndef) && define.amd) {
+  if (typeof define === 'function' && define.amd) {
     define(_sideburn);
     exportToContext = false;
   }
