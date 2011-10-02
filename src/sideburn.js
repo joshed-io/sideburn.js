@@ -329,7 +329,7 @@
   var exportToContext = true;
 
   if (typeof define === 'function' && define.amd) {
-    define(_sideburn);
+    define([], _sideburn);
     exportToContext = false;
   }
 
