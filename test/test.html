@@ -49,6 +49,10 @@ QUnit.test('attribute names should be present on the top level object', function
   equal(sideburn("<div id='A'></div>").id, "A");
 });
 
+QUnit.test('sideburn should recursively visit child nodes and add properties', function() {
+  equal(sideburn("<div><img src='foo.png'/></div>").img.src, "foo.png");
+});
+
 QUnit.module('reading text nodes');
 
 QUnit.test('an element\'s text value should be readable via text property', function() {
