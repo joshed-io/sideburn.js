@@ -272,9 +272,8 @@
             extendById(cnode, cObj, obj);
 
             //recurse of the mummy
-            if (cnode.hasChildNodes()) {
-              setObjects(cObj, cnode);
-            }
+            setObjects(cObj, cnode);
+
             break;
           case 3:
             pushToArrayAtKey(obj, arrayKey(nmText), cnode.nodeValue, true);
